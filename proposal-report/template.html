@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{TITLE}} — {{PREPARED_FOR_SHORT}}</title>
+<!-- TEMPLATE: proposal-report skill. Fill every {{PLACEHOLDER}}, duplicate the
+     marked repeating blocks (one matrix <tr> + one <proposal-article> per
+     recommendation), and delete optional blocks that don't apply.
+     Fonts load from Google Fonts (falls back to system serif/sans/mono offline). -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Spectral:ital,wght@1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper:        #fbfaf6;
+    --paper-2:      #f4f1e8;
+    --card:         #fffdf8;
+    --ink:          #1c1b18;
+    --ink-soft:     #45433d;
+    --muted:        #7c796f;
+    --rule:         #e6e1d5;
+    --rule-strong:  #d3cdbd;
+    --accent:       #1f3a4d;
+    --accent-soft:  #2f5468;
+    --gold:         #9a7522;
+    --clay:         #a4633f;
+
+    --measure: 38rem;
+    --serif: "Newsreader", "Iowan Old Style", Palatino, Georgia, serif;
+    --serif-italic: "Spectral", "Newsreader", Palatino, Georgia, serif;
+    --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(circle at 50% -10%, #ffffff 0%, var(--paper) 55%);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-optical-sizing: auto;
+    font-size: 1.18rem;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection { background: rgba(31,58,77,0.14); }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-strong);
+    transition: border-color .15s ease, color .15s ease;
+  }
+  a:hover { color: var(--accent-soft); border-color: var(--accent-soft); }
+
+  /* ---------- Shared layout shell ---------- */
+  .shell {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* On wide viewports the table of contents is docked open down the left
+     side (see the report-toc component). Reserve its width so the centered
+     content shell clears the fixed panel instead of sitting underneath it. */
+  @media screen and (min-width: 1400px) {
+    body { padding-left: 322px; }
+  }
+
+  /* small-caps eyebrow / labels */
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ====================================================== */
+  /* Masthead                                               */
+  /* ====================================================== */
+  .masthead {
+    padding: 7.5rem 0 3rem;
+  }
+  .masthead .kicker {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 1.6rem;
+  }
+  .masthead h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(2.6rem, 6vw, 4.1rem);
+    line-height: 1.04;
+    letter-spacing: -0.012em;
+    margin: 0 0 1.2rem;
+    max-width: 22ch;
+  }
+  .masthead .lede {
+    font-family: var(--serif-italic);
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--ink-soft);
+    max-width: 40ch;
+    margin: 0 0 3rem;
+  }
+  .masthead .colophon {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1.5rem 2rem;
+    border-top: 1px solid var(--rule-strong);
+    border-bottom: 1px solid var(--rule-strong);
+    padding: 1.6rem 0;
+    max-width: 46rem;
+  }
+  .colophon .field .label {
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+  .colophon .field .value {
+    font-size: 1.02rem;
+    line-height: 1.33em;
+    color: var(--ink);
+  }
+  /* Status orb. Two variants, chosen by modifier class on the span:
+     "pending"  = pulsing amber, for draft / awaiting-review statuses
+     "accepted" = static green, for accepted / final statuses */
+  .status-orb {
+    display: inline-block;
+    width: 8px; height: 8px;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+    vertical-align: baseline;
+  }
+  .status-orb.accepted { background: #319e54; }
+  .status-orb.pending {
+    background: #e8b923;
+    animation: status-pulse 1.9s ease-out infinite;
+  }
+  @keyframes status-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(232,185,35,0.6); }
+    70%  { box-shadow: 0 0 0 6px rgba(232,185,35,0); }
+    100% { box-shadow: 0 0 0 0 rgba(232,185,35,0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .status-orb.pending { animation: none; }
+  }
+
+  /* ====================================================== */
+  /* Notice / disclaimer                                    */
+  /* ====================================================== */
+  .notice {
+    margin: 3rem auto 0;
+    max-width: 46rem;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--gold);
+    padding: 1.5rem 1.8rem;
+    border-radius: 2px;
+  }
+  .notice .notice-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.7rem;
+  }
+  .notice .notice-head .eyebrow { color: var(--ink-soft); }
+  .notice p {
+    margin: 0;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    text-align: justify;
+    hyphens: auto;
+  }
+  .notice svg { width: 17px; height: 17px; color: var(--gold); flex: none; }
+
+  /* ====================================================== */
+  /* Section intro / executive note                         */
+  /* ====================================================== */
+  .section-head {
+    margin: 6.5rem auto 0;
+    max-width: var(--measure);
+  }
+  .section-head h2 {
+    font-weight: 500;
+    font-size: 2rem;
+    letter-spacing: -0.01em;
+    margin: 0.7rem 0 1.2rem;
+    line-height: 1.12;
+  }
+  .prose { max-width: var(--measure); margin-left: auto; margin-right: auto; }
+  .prose p { margin: 0 0 1.15rem; }
+  .prose strong { font-weight: 600; }
+
+  /* ====================================================== */
+  /* At-a-glance matrix                                     */
+  /* ====================================================== */
+  .matrix-wrap { margin: 2.2rem auto 0; max-width: 52rem; }
+  table.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+  }
+  table.matrix thead th {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    padding: 0 0.5rem 0.85rem;
+    border-bottom: 1.5px solid var(--rule-strong);
+    white-space: nowrap;
+  }
+  table.matrix thead th.t-num { text-align: left; width: 2.2rem; }
+  table.matrix thead th.t-name { text-align: center; }
+  table.matrix thead th .th-ic { display: block; width: 15px; height: 15px; margin: 0 auto 5px; }
+  table.matrix thead th .th-ic.payoff     { color: #319e54; }
+  table.matrix thead th .th-ic.conviction { color: #1f3a4d; }
+  table.matrix thead th .th-ic.risk       { color: #a4633f; }
+  table.matrix thead th .th-ic.effort     { color: #7c796f; }
+  table.matrix tbody td {
+    padding: 0.95rem 0.5rem;
+    border-bottom: 1px solid var(--rule);
+    text-align: center;
+    vertical-align: middle;
+  }
+  table.matrix tbody tr:hover { background: rgba(31,58,77,0.025); }
+  td.c-num {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    color: var(--muted);
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+  }
+  td.c-name { text-align: left; }
+  td.c-name a {
+    font-family: var(--serif);
+    font-size: 1.08rem;
+    color: var(--ink);
+    border-bottom-color: transparent;
+  }
+  td.c-name a:hover { border-bottom-color: var(--rule-strong); }
+  .legend {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 1.2rem auto 0;
+    max-width: 52rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.4rem;
+    align-items: center;
+  }
+  .legend .key { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+  /* ====================================================== */
+  /* Proposal sections — light-DOM body styling             */
+  /* ====================================================== */
+  .proposals { margin-top: 4rem; }
+
+  proposal-article { display: block; }
+
+  /* These rules style the *slotted* body content (light DOM). */
+  .body h3 { /* sub-section heads inside a proposal */
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: -0.005em;
+    margin: 2.6rem 0 1rem;
+    line-height: 1.2;
+  }
+  .body .label-head {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 2.1rem 0 0.8rem;
+  }
+  .body .label-head.muted { color: var(--muted); }
+  .body p { margin: 0 0 1.1rem; }
+  .body ul, .body ol { margin: 0 0 1.2rem; padding-left: 1.3rem; }
+  .body li { margin: 0 0 0.6rem; padding-left: 0.2rem; }
+  .body li::marker { color: var(--muted); }
+  .body em { font-style: italic; font-family: var(--serif-italic); }
+  .body strong { font-weight: 600; }
+
+  .body blockquote {
+    margin: 1.6rem 0;
+    padding: 0.2rem 0 0.2rem 1.4rem;
+    border-left: 2px solid var(--gold);
+    font-family: var(--serif-italic);
+    font-style: italic;
+    font-size: 1.18rem;
+    color: var(--ink-soft);
+  }
+  .body blockquote .attr {
+    display: block;
+    font-style: normal;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
+  .body blockquote.tip {
+    border-left-color: var(--accent);
+    font-family: var(--serif);
+    font-style: normal;
+    font-size: 1.02rem;
+  }
+  .body blockquote.tip strong { color: var(--accent); }
+
+  /* code */
+  .body code {
+    font-family: var(--mono);
+    font-size: 0.84em;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 0.08em 0.36em;
+  }
+  .body pre {
+    background: #1d2733;
+    color: #e7ecf1;
+    border-radius: 6px;
+    padding: 1.1rem 1.25rem;
+    overflow-x: auto;
+    margin: 1.4rem 0;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 8px 24px -16px rgba(0,0,0,0.5);
+  }
+  .body pre code {
+    background: none; border: none; padding: 0;
+    font-family: var(--mono); color: inherit; font-size: inherit;
+  }
+  .body pre .cm { color: #8aa0ad; font-style: italic; }
+  .body pre .kw { color: #7cc7e8; }
+  .body pre .st { color: #c7b08a; }
+  .body pre.tree { background: var(--paper-2); color: var(--ink-soft); box-shadow: none; border: 1px solid var(--rule); }
+  .body pre.tree .cm { color: var(--muted); }
+
+  /* tables inside body */
+  .body table.data {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 0.92rem;
+    margin: 1.4rem 0;
+  }
+  .body table.data th, .body table.data td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--rule);
+    text-align: right;
+  }
+  .body table.data th:first-child, .body table.data td:first-child { text-align: left; }
+  .body table.data thead th {
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); border-bottom: 1.5px solid var(--rule-strong);
+  }
+  .body table.data tfoot td { font-weight: 600; border-top: 1.5px solid var(--rule-strong); border-bottom: none; }
+  .body table.data td .pct { color: var(--muted); }
+
+  /* architecture figures */
+  figure.diagram {
+    margin: 2rem 0;
+    padding: 1.6rem 1.4rem 1.1rem;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+  }
+  figure.diagram svg { width: 100%; height: auto; display: block; }
+  figure.diagram figcaption {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 1rem;
+    letter-spacing: 0.02em;
+  }
+
+  sup.ref { font-family: var(--sans); font-size: 0.62em; line-height: 0; }
+  sup.ref a { border: none; color: var(--accent); padding: 0 0.05em; }
+
+  /* ====================================================== */
+  /* Footer                                                 */
+  /* ====================================================== */
+  footer.report-foot {
+    margin-top: 7rem;
+    border-top: 1px solid var(--rule-strong);
+    padding: 2.5rem 0 5rem;
+  }
+  footer.report-foot .shell {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    font-family: var(--sans); font-size: 0.78rem; color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 640px) {
+    body { font-size: 1.08rem; }
+    .shell { padding: 0 1.25rem; }
+    table.matrix thead th.opt, table.matrix td.opt { display: none; }
+  }
+
+  /* ====================================================== */
+  /* Print                                                  */
+  /* ====================================================== */
+  @media print {
+    :root { --paper:#fff; }
+    body { background: #fff; font-size: 11pt; }
+    .masthead { padding-top: 0.5in; }
+    a { color: var(--ink); border: none; }
+    .body pre { background: #f3f1ea; color: #1c1b18; box-shadow: none; border: 1px solid #ddd; font-size: 0.516rem; }
+    .body pre .kw,.body pre .st,.body pre .cm { color: #555; }
+    proposal-article, figure.diagram, .notice { break-inside: avoid; }
+    .section-head { break-before: page; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ===================== TEMPLATES ===================== -->
+
+  <template id="scale-dots-tpl">
+    <style>
+      :host { display: inline-flex; gap: 4px; align-items: center; line-height: 1; }
+      .pip {
+        width: 9px; height: 9px; border-radius: 50%;
+        border: 1px solid var(--dot-line, #c9c3b4);
+        background: var(--dot-empty, transparent);
+      }
+      .pip.full { background: var(--dot-fill, #1c1b18); border-color: var(--dot-fill, #1c1b18); }
+      .pip.half {
+        background: linear-gradient(90deg, var(--dot-fill,#1c1b18) 0 50%, var(--dot-empty,transparent) 50% 100%);
+        border-color: var(--dot-fill, #1c1b18);
+      }
+    </style>
+  </template>
+
+  <template id="proposal-tpl">
+    <style>
+      :host { display: block; margin: 0 auto; }
+      .wrap {
+        display: grid;
+        grid-template-columns: 4.5rem minmax(0, 38rem);
+        gap: 0 2rem;
+        max-width: 44.5rem;
+        margin: 0 auto;
+        padding: 4.5rem 0;
+        border-top: 1px solid var(--rule);
+      }
+      :host(:first-of-type) .wrap { border-top: none; padding-top: 1rem; }
+
+      .numeral {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-size: 2.6rem;
+        line-height: 1;
+        color: var(--rule-strong);
+        font-variant-numeric: tabular-nums;
+        padding-top: 0.4rem;
+        text-align: right;
+      }
+      .head .eyebrow {
+        font-family: var(--sans);
+        font-size: 0.7rem; font-weight: 600; letter-spacing: 0.18em;
+        text-transform: uppercase; color: var(--gold);
+      }
+      .head h2 {
+        font-family: var(--serif);
+        font-weight: 500;
+        font-size: 1.95rem;
+        line-height: 1.12;
+        letter-spacing: -0.01em;
+        margin: 0.5rem 0 0.7rem;
+        color: var(--ink);
+      }
+      .head .blurb {
+        font-family: var(--serif-italic);
+        font-style: italic;
+        font-size: 1.18rem;
+        color: var(--ink-soft);
+        margin: 0 0 1.6rem;
+        line-height: 1.45;
+      }
+
+      /* metric rail */
+      .rail {
+        display: flex; flex-wrap: wrap; gap: 0.6rem 1.8rem;
+        padding: 0.9rem 0 0.2rem;
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        margin-bottom: 1.7rem;
+      }
+      .metric { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; }
+      .metric svg { width: 16px; height: 16px; color: var(--muted); flex: none; }
+      .metric .mlabel {
+        font-family: var(--sans); font-size: 0.64rem; font-weight: 600;
+        letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+      }
+      .metric .mval {
+        font-family: var(--sans); font-size: 0.78rem; color: var(--ink-soft);
+        margin-left: 0.1rem;
+      }
+
+      /* payoff callout */
+      .payoff {
+        background: linear-gradient(180deg, rgba(49,158,84,0.06), rgba(49,158,84,0.02));
+        border: 1px solid rgba(49,158,84,0.30);
+        border-left: 3px solid #319e54;
+        border-radius: 3px;
+        padding: 1rem 1.2rem;
+        margin: 0 0 1.9rem;
+      }
+      .payoff .ptop {
+        display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;
+      }
+      .payoff .ptop svg { width: 15px; height: 15px; color: #319e54; }
+      .payoff .ptop .eyebrow { color: #319e54; }
+      .payoff .pdetail {
+        font-family: var(--serif); font-size: 1.02rem; color: var(--ink-soft);
+        line-height: 1.5; margin: 0;
+      }
+
+      @media (max-width: 640px) {
+        .wrap { grid-template-columns: 1fr; gap: 0; padding: 3rem 0; }
+        .numeral { text-align: left; font-size: 2rem; padding-top: 0; margin-bottom: 0.4rem; }
+      }
+
+      @media print {
+        .payoff {
+          background: #eef6f0;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+    <article class="wrap">
+      <div class="numeral" data-num></div>
+      <div>
+        <div class="head">
+          <div class="eyebrow" data-eyebrow></div>
+          <h2 data-title></h2>
+          <p class="blurb" data-blurb></p>
+        </div>
+        <div class="rail" data-rail></div>
+        <div class="payoff" data-payoff></div>
+        <slot></slot>
+      </div>
+    </article>
+  </template>
+
+  <!-- ===================== COMPONENTS ===================== -->
+  <script>
+    const LEVELS = {
+      "very low": 1, "low": 2, "low-medium": 2.5, "medium": 3,
+      "medium-high": 3.5, "high": 4, "very high": 5
+    };
+    const KIND_COLOR = {
+      payoff:     { fill: "#319e54", line: "#aeddc0", empty: "#fff" },
+      conviction: { fill: "#1f3a4d", line: "#b9c2c8", empty: "#fff" },
+      effort:     { fill: "#7c796f", line: "#cfcabd", empty: "#fff" },
+      risk:       { fill: "#a4633f", line: "#d7c2b4", empty: "#fff" }
+    };
+    const ICONS = {
+      conviction: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.8" fill="currentColor" stroke="none"/></svg>',
+      risk: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+      effort: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+      // Payoff is represented by a faceted jewel throughout (rail, TOC, matrix, callout).
+      payoff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/><path d="M8.5 9 12 21"/><path d="M15.5 9 12 21"/><path d="m9 3-1 6"/><path d="m15 3 1 6"/></svg>'
+    };
+
+    class ScaleDots extends HTMLElement {
+      static get observedAttributes() { return ["value", "kind"]; }
+      connectedCallback() { this.render(); }
+      attributeChangedCallback() { if (this.shadowRoot) this.render(); }
+      render() {
+        if (!this.shadowRoot) this.attachShadow({ mode: "open" });
+        const tpl = document.getElementById("scale-dots-tpl");
+        this.shadowRoot.innerHTML = "";
+        this.shadowRoot.appendChild(tpl.content.cloneNode(true));
+        const value = LEVELS[(this.getAttribute("value") || "").toLowerCase()] ?? 0;
+        const kind = this.getAttribute("kind") || "conviction";
+        const c = KIND_COLOR[kind] || KIND_COLOR.conviction;
+        this.style.setProperty("--dot-fill", c.fill);
+        this.style.setProperty("--dot-line", c.line);
+        this.style.setProperty("--dot-empty", c.empty);
+        this.setAttribute("title", (this.getAttribute("value") || "") + " " + kind);
+        this.setAttribute("role", "img");
+        this.setAttribute("aria-label", kind + ": " + (this.getAttribute("value") || ""));
+        for (let i = 1; i <= 5; i++) {
+          const pip = document.createElement("span");
+          pip.className = "pip " + (i <= Math.floor(value) ? "full" : (value >= i - 0.5 ? "half" : "empty"));
+          this.shadowRoot.appendChild(pip);
+        }
+      }
+    }
+    customElements.define("scale-dots", ScaleDots);
+
+    class ProposalArticle extends HTMLElement {
+      connectedCallback() {
+        const tpl = document.getElementById("proposal-tpl");
+        const root = this.attachShadow({ mode: "open" });
+        root.appendChild(tpl.content.cloneNode(true));
+
+        const num = this.getAttribute("num");
+        const padded = String(num).padStart(2, "0");
+        root.querySelector("[data-num]").textContent = padded;
+        root.querySelector("[data-eyebrow]").textContent = "Recommendation " + padded;
+        root.querySelector("[data-title]").textContent = this.getAttribute("title");
+        root.querySelector("[data-blurb]").textContent = this.getAttribute("blurb");
+
+        // metric rail
+        const rail = root.querySelector("[data-rail]");
+        const metrics = [
+          ["payoff", "Payoff", this.getAttribute("payoff")],
+          ["conviction", "Conviction", this.getAttribute("conviction")],
+          ["risk", "Risk", this.getAttribute("risk")],
+          ["effort", "Effort", this.getAttribute("effort")]
+        ];
+        for (const [kind, label, val] of metrics) {
+          const m = document.createElement("div");
+          m.className = "metric";
+          m.innerHTML = ICONS[kind] +
+            '<span class="mlabel">' + label + '</span>' +
+            '<scale-dots kind="' + kind + '" value="' + val + '"></scale-dots>' +
+            '<span class="mval">' + val + '</span>';
+          rail.appendChild(m);
+        }
+
+        // payoff callout
+        const detail = this.getAttribute("payoff-detail");
+        const payoffBox = root.querySelector("[data-payoff]");
+        const fallback = "A high-value, low-regret improvement: " +
+          this.getAttribute("title").toLowerCase() + " makes the codebase more correct and easier to change.";
+        payoffBox.innerHTML =
+          '<div class="ptop">' + ICONS.payoff +
+          '<span class="eyebrow">Payoff</span></div>' +
+          '<p class="pdetail">' + (detail || fallback) + '</p>';
+      }
+    }
+    customElements.define("proposal-article", ProposalArticle);
+
+    // Collapsible table of contents, derived from the proposal-article elements.
+    class ReportToc extends HTMLElement {
+      connectedCallback() {
+        this.attachShadow({ mode: "open" });
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", () => this.build(), { once: true });
+        } else {
+          this.build();
+        }
+      }
+
+      esc(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      // Map a level word to its 1–5 number (halves shown as e.g. "3.5").
+      score(word) {
+        const v = LEVELS[(word || "").toLowerCase()];
+        if (v == null) return "–";
+        return Number.isInteger(v) ? String(v) : v.toFixed(1);
+      }
+
+      build() {
+        const proposals = Array.from(document.querySelectorAll("proposal-article"));
+        const kinds = ["payoff", "conviction", "risk", "effort"];
+
+        const items = proposals.map((p) => {
+          const id = p.getAttribute("id");
+          const num = String(p.getAttribute("num")).padStart(2, "0");
+          const title = this.esc(p.getAttribute("title"));
+          const scores = kinds.map((k) =>
+            '<span class="sc sc-' + k + '" title="' + k + ': ' + this.esc(p.getAttribute(k)) + '">' +
+              ICONS[k] + '<i>' + this.score(p.getAttribute(k)) + '</i></span>'
+          ).join("");
+          return '<a class="toc-item" href="#' + id + '" data-target="' + id + '">' +
+            '<span class="toc-num">' + num + '</span>' +
+            '<span class="toc-body">' +
+              '<span class="toc-name">' + title + '</span>' +
+              '<span class="toc-scores">' + scores + '</span>' +
+            '</span></a>';
+        }).join("");
+
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host { font-family: var(--sans); }
+            @media print { :host { display: none; } }
+
+            .toggle {
+              position: fixed; top: 1.4rem; left: 1.4rem; z-index: 1002;
+              display: inline-flex; align-items: center; gap: 0.5rem;
+              font-family: var(--sans); font-size: 0.7rem; font-weight: 600;
+              letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+              background: rgba(251,250,246,0.92);
+              -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+              border: 1px solid var(--rule-strong); border-radius: 999px;
+              padding: 0.5rem 0.9rem 0.5rem 0.72rem; cursor: pointer;
+              box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 6px 20px -12px rgba(0,0,0,0.3);
+              transition: transform .15s ease, box-shadow .15s ease, opacity .2s ease, color .15s ease;
+            }
+            .toggle:hover { color: var(--ink); transform: translateY(-1px);
+              box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 10px 26px -12px rgba(0,0,0,0.4); }
+            .toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+            .toggle svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+            :host(.is-open) .toggle { opacity: 0; pointer-events: none; transform: scale(0.92); }
+
+            .backdrop {
+              position: fixed; inset: 0; z-index: 1000;
+              background: rgba(20,20,18,0.20); opacity: 0; transition: opacity .25s ease;
+            }
+            :host(.is-open) .backdrop { opacity: 1; }
+            .backdrop[hidden] { display: none; }
+            @media (min-width: 900px) { .backdrop { background: transparent; } }
+
+            .panel {
+              position: fixed; top: 0; left: 0; z-index: 1001;
+              width: 322px; max-width: 86vw; height: 100vh; height: 100dvh;
+              background: var(--paper); border-right: 1px solid var(--rule-strong);
+              box-shadow: 0 0 40px -12px rgba(0,0,0,0.35);
+              transform: translateX(-102%);
+              transition: transform .28s cubic-bezier(.22,.61,.36,1);
+              display: flex; flex-direction: column; overflow: hidden;
+            }
+            :host(.is-open) .panel { transform: translateX(0); }
+
+            .phead {
+              display: flex; align-items: center; justify-content: space-between;
+              padding: 1.5rem 1.4rem 1rem; border-bottom: 1px solid var(--rule); flex: none;
+            }
+            .phead .eyebrow {
+              font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em;
+              text-transform: uppercase; color: var(--muted);
+            }
+            .close {
+              appearance: none; border: none; background: none; cursor: pointer;
+              font-size: 1.45rem; line-height: 1; color: var(--muted); padding: 0 0.25rem;
+              transition: color .15s ease;
+            }
+            .close:hover { color: var(--ink); }
+            .close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+            .list { overflow-y: auto; padding: 0.5rem 0.6rem 2rem; }
+
+            .toc-item {
+              display: grid; grid-template-columns: 1.85rem 1fr; gap: 0 0.55rem;
+              padding: 0.42rem 0.7rem 0.82rem; border-radius: 6px; text-decoration: none;
+              border-left: 2px solid transparent; color: inherit;
+              transition: background .12s ease;
+            }
+            .toc-item:hover { background: rgba(31,58,77,0.05); }
+            .toc-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+            .toc-item.active { background: rgba(49,158,84,0.09); }
+
+            .toc-num {
+              grid-row: 1 / span 2; align-self: center;
+              font-family: var(--serif); font-size: 0.95rem; color: var(--muted);
+              font-variant-numeric: tabular-nums;
+            }
+            .toc-name { display: inline-block; font-family: var(--serif); font-size: 1.02rem; line-height: 1.32; color: var(--ink); }
+
+            .toc-scores {
+              display: flex; flex-wrap: nowrap; gap: 0 0.62rem; margin-top: 0.3rem;
+            }
+            .sc { display: inline-flex; align-items: center; gap: 0.22rem;
+              font-size: 0.72rem; line-height: 1; }
+            .sc svg { width: 13px; height: 13px; stroke-width: 1.7; fill: none; }
+            .sc i { font-style: normal; font-weight: 600; color: var(--ink-soft);
+              font-variant-numeric: tabular-nums; }
+            .sc-payoff svg     { color: #319e54; }
+            .sc-conviction svg { color: #1f3a4d; }
+            .sc-risk svg       { color: #a4633f; }
+            .sc-effort svg     { color: #7c796f; }
+
+            /* Wide viewports: panel is permanently docked, so the toggle,
+               close button and dimming backdrop are all unnecessary. The
+               document reserves the gutter via body padding-left. */
+            @media (min-width: 1400px) {
+              .toggle { display: none; }
+              .close { display: none; }
+              .backdrop { display: none; }
+              .panel { transform: translateX(0); box-shadow: none; }
+            }
+          </style>
+          <button class="toggle" type="button" aria-expanded="false" aria-controls="toc-panel"
+                  aria-label="Open table of contents">
+            <svg viewBox="0 0 24 24" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="14" y2="17"/></svg>
+            <span>Contents</span>
+          </button>
+          <div class="backdrop" hidden></div>
+          <aside id="toc-panel" class="panel" aria-hidden="true" aria-label="Table of contents">
+            <div class="phead">
+              <span class="eyebrow">Contents</span>
+              <button class="close" type="button" aria-label="Close table of contents">&times;</button>
+            </div>
+            <nav class="list">${items}</nav>
+          </aside>`;
+
+        this._toggle = this.shadowRoot.querySelector(".toggle");
+        this._panel = this.shadowRoot.querySelector(".panel");
+        this._backdrop = this.shadowRoot.querySelector(".backdrop");
+
+        this._toggle.addEventListener("click", () => this.setOpen(true));
+        this.shadowRoot.querySelector(".close").addEventListener("click", () => this.setOpen(false));
+        this._backdrop.addEventListener("click", () => this.setOpen(false));
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && this._open) this.setOpen(false);
+        });
+        // Jumping to a section collapses the panel back to the button.
+        this.shadowRoot.querySelectorAll(".toc-item").forEach((a) =>
+          a.addEventListener("click", () => this.setOpen(false, false)));
+
+        // On wide viewports the panel is permanently docked open; on narrow
+        // ones it stays the slide-in drawer driven by the toggle.
+        this._dockMq = window.matchMedia("(min-width: 1400px)");
+        const syncDock = () => {
+          this._docked = this._dockMq.matches;
+          this.applyOpen(this._docked);
+        };
+        this._dockMq.addEventListener("change", syncDock);
+        syncDock();
+        this.spy();
+      }
+
+      applyOpen(isOpen) {
+        this._open = isOpen;
+        this.classList.toggle("is-open", isOpen);
+        this._toggle.setAttribute("aria-expanded", String(isOpen));
+        this._panel.setAttribute("aria-hidden", String(!isOpen));
+        this._backdrop.hidden = !isOpen;
+      }
+
+      setOpen(isOpen, manageFocus = true) {
+        if (this._docked) return; // docked panel stays open; ignore toggles
+        this.applyOpen(isOpen);
+        if (!manageFocus) return;
+        if (isOpen) {
+          const target = this.shadowRoot.querySelector(".toc-item.active") ||
+                         this.shadowRoot.querySelector(".toc-item");
+          if (target) target.focus({ preventScroll: true });
+        } else {
+          this._toggle.focus({ preventScroll: true });
+        }
+      }
+
+      spy() {
+        const links = new Map();
+        this.shadowRoot.querySelectorAll(".toc-item").forEach((a) => links.set(a.dataset.target, a));
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach((en) => {
+            if (!en.isIntersecting) return;
+            const a = links.get(en.target.id);
+            if (!a) return;
+            this.shadowRoot.querySelectorAll(".toc-item.active").forEach((x) => x.classList.remove("active"));
+            a.classList.add("active");
+          });
+        }, { rootMargin: "-18% 0px -72% 0px", threshold: 0 });
+        document.querySelectorAll("proposal-article").forEach((p) => obs.observe(p));
+      }
+    }
+    customElements.define("report-toc", ReportToc);
+
+    // Prev/next pager that pages between proposals, with ends auto-disabled via a scroll-spy.
+    class ProposalNav extends HTMLElement {
+      connectedCallback() {
+        this.attachShadow({ mode: "open" });
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", () => this.build(), { once: true });
+        } else {
+          this.build();
+        }
+      }
+
+      build() {
+        this.ids = Array.from(document.querySelectorAll("proposal-article")).map((p) => p.id);
+        this.current = -1; // -1 = above the first proposal
+
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host { font-family: var(--sans); }
+            @media print { :host { display: none; } }
+            .nav { position: fixed; top: 1.4rem; right: 1.4rem; z-index: 1002; display: flex; gap: 0.5rem; }
+            .btn {
+              display: inline-flex; align-items: center; justify-content: center;
+              width: 2.35rem; height: 2.35rem; border-radius: 999px; cursor: pointer;
+              color: var(--ink-soft);
+              background: rgba(251,250,246,0.92);
+              -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+              border: 1px solid var(--rule-strong);
+              box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 6px 20px -12px rgba(0,0,0,0.3);
+              transition: transform .15s ease, box-shadow .15s ease, color .15s ease, opacity .15s ease;
+            }
+            .btn:hover:not(:disabled) { color: var(--ink); transform: translateY(-1px);
+              box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 10px 26px -12px rgba(0,0,0,0.4); }
+            .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+            .btn:disabled { opacity: 0.32; cursor: default; box-shadow: none; pointer-events: none; }
+            .btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; }
+          </style>
+          <div class="nav">
+            <button class="btn prev" type="button" aria-label="Previous recommendation">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="btn next" type="button" aria-label="Next recommendation">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>`;
+
+        this._prev = this.shadowRoot.querySelector(".prev");
+        this._next = this.shadowRoot.querySelector(".next");
+        this._prev.addEventListener("click", () => this.go(-1));
+        this._next.addEventListener("click", () => this.go(1));
+
+        this.spy();
+      }
+
+      go(dir) {
+        const target = this.current + dir;
+        if (target < 0 || target >= this.ids.length) return;
+        const el = document.getElementById(this.ids[target]);
+        if (!el) return;
+        this.current = target;        // optimistic; the spy will confirm
+        this.update();
+        history.replaceState(null, "", "#" + this.ids[target]);
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      update() {
+        this._prev.disabled = this.current <= 0;
+        this._next.disabled = this.current >= this.ids.length - 1;
+      }
+
+      spy() {
+        this.els = this.ids.map((id) => document.getElementById(id));
+        let ticking = false;
+        const onScroll = () => {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(() => { this.compute(); ticking = false; });
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll, { passive: true });
+        this.compute();
+      }
+
+      // Current = the last proposal whose top has crossed a line near the top of
+      // the viewport; -1 when we are still above the first proposal.
+      compute() {
+        const line = window.innerHeight * 0.25;
+        let cur = -1;
+        for (let i = 0; i < this.els.length; i++) {
+          if (this.els[i] && this.els[i].getBoundingClientRect().top <= line) cur = i;
+          else break;
+        }
+        this.current = cur;
+        this.update();
+      }
+    }
+    customElements.define("proposal-nav", ProposalNav);
+  </script>
+
+  <report-toc></report-toc>
+  <proposal-nav></proposal-nav>
+
+  <!-- ===================== MASTHEAD ===================== -->
+  <header class="masthead">
+    <div class="shell">
+      <p class="kicker">{{KICKER}}</p>
+      <h1>{{TITLE}}</h1>
+      <p class="lede">{{LEDE}}</p>
+      <div class="colophon">
+        <div class="field"><div class="label">Prepared for</div><div class="value">{{PREPARED_FOR}}</div></div>
+        <div class="field"><div class="label">Prepared by</div><div class="value">{{PREPARED_BY}}</div></div>
+        <div class="field"><div class="label">Issued</div><div class="value">{{ISSUED_DATE}}</div></div>
+        <div class="field"><div class="label">Scope</div><div class="value">{{SCOPE}}</div></div>
+        <!-- STATUS: {{ORB_STATE}} is "pending" (pulsing amber) for draft/in-review
+             statuses, "accepted" (static green) for accepted/final ones.
+             Delete the span entirely if no status signal makes sense. -->
+        <div class="field"><div class="label">Status</div><div class="value"><span class="status-orb {{ORB_STATE}}" aria-hidden="true"></span>{{STATUS}}</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== NOTICE (OPTIONAL — delete this whole <section> if no disclaimer) ===================== -->
+  <section class="shell">
+    <div class="notice" role="note" aria-label="Disclaimer">
+      <div class="notice-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><circle cx="12" cy="16" r="0.6" fill="currentColor" stroke="none"/></svg>
+        <span class="eyebrow">Disclaimer</span>
+      </div>
+      <p>{{DISCLAIMER_TEXT}}</p>
+    </div>
+  </section>
+
+  <!-- ===================== EXECUTIVE NOTE + MATRIX ===================== -->
+  <section class="shell">
+    <div class="section-head">
+      <span class="eyebrow">Overview</span>
+      <h2>{{OVERVIEW_HEADING}}</h2>
+    </div>
+    <div class="prose">
+      <p>{{OVERVIEW_PARAGRAPH_1}}</p>
+      <p>{{OVERVIEW_PARAGRAPH_2}}</p>
+    </div>
+
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th class="t-num">No.</th>
+            <th class="t-name">Recommendation</th>
+            <th><svg class="th-ic payoff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/><path d="M8.5 9 12 21"/><path d="M15.5 9 12 21"/><path d="m9 3-1 6"/><path d="m15 3 1 6"/></svg>Payoff</th>
+            <th><svg class="th-ic conviction" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.8" fill="currentColor" stroke="none"/></svg>Conviction</th>
+            <th class="opt"><svg class="th-ic risk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Risk</th>
+            <th class="opt"><svg class="th-ic effort" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Effort</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ══ REPEATING BLOCK: one <tr> per recommendation, in order. ══
+               {{NN}} = zero-padded number ("01"), {{N}} = plain number ("1").
+               scale-dots values MUST be one of: very low | low | low-medium |
+               medium | medium-high | high | very high — and MUST exactly match
+               the attributes on the corresponding <proposal-article>. -->
+          <tr>
+            <td class="c-num">{{NN}}</td>
+            <td class="c-name"><a href="#p{{N}}">{{REC_TITLE}}</a></td>
+            <td><scale-dots kind="payoff" value="{{PAYOFF}}"></scale-dots></td>
+            <td><scale-dots kind="conviction" value="{{CONVICTION}}"></scale-dots></td>
+            <td class="opt"><scale-dots kind="risk" value="{{RISK}}"></scale-dots></td>
+            <td class="opt"><scale-dots kind="effort" value="{{EFFORT}}"></scale-dots></td>
+          </tr>
+          <!-- ══ END REPEATING BLOCK ══ -->
+        </tbody>
+      </table>
+      <div class="legend">
+        <span class="key"><scale-dots kind="payoff" value="medium-high"></scale-dots> Payoff &amp; Conviction: more is stronger</span>
+        <span class="key"><scale-dots kind="risk" value="medium"></scale-dots> Risk &amp; Effort: more is greater cost</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROPOSALS ===================== -->
+  <main class="proposals shell">
+
+    <!-- ══ REPEATING BLOCK: one <proposal-article> per recommendation. ══
+         id MUST be "p" + num (the matrix row and TOC link to it).
+         title / blurb / payoff-detail are plain-text attributes: use HTML
+         entities (&amp; &rsquo; &ldquo; &rdquo; &mdash;) — never raw tags.
+         The TOC sidebar and prev/next pager build themselves from these
+         elements automatically; nothing else to wire up.
+
+         Body building blocks (all optional, use what the content needs):
+           <h3>…</h3>                              sub-section heading
+           <div class="label-head">Rationale</div>  small-caps label (accent)
+           <div class="label-head muted">…</div>    small-caps label (muted)
+           <blockquote class="tip"><strong>Guiding principle.</strong> …</blockquote>
+           <blockquote>…<span class="attr">— Source</span></blockquote>  pull quote
+           <code>inline</code>
+           <pre><code><span class="cm">// comment</span> <span class="kw">keyword</span> <span class="st">"string"</span></code></pre>
+           <pre class="tree"><code>folder/   <span class="cm">← annotation</span></code></pre>
+           <table class="data"> … </table>          sans-serif data table
+           <figure class="diagram"><svg …>…</svg><figcaption>…</figcaption></figure>
+           <sup class="ref"><a href="…" target="_blank" rel="noopener">ref</a></sup>
+    -->
+    <proposal-article id="p{{N}}" num="{{N}}" title="{{REC_TITLE}}"
+      blurb="{{REC_BLURB_ONE_SENTENCE}}"
+      conviction="{{CONVICTION}}" risk="{{RISK}}" effort="{{EFFORT}}" payoff="{{PAYOFF}}"
+      payoff-detail="{{PAYOFF_DETAIL_ONE_TO_TWO_SENTENCES}}">
+      <div class="body">
+        <p>{{OPENING_PARAGRAPHS}}</p>
+
+        <div class="label-head">Rationale</div>
+        <ul>
+          <li>{{RATIONALE_BULLET}}</li>
+        </ul>
+
+        <div class="label-head muted">Suggested plan</div>
+        <ul>
+          <li>{{PLAN_BULLET}}</li>
+        </ul>
+      </div>
+    </proposal-article>
+    <!-- ══ END REPEATING BLOCK ══ -->
+
+  </main>
+
+  <footer class="report-foot">
+    <div class="shell">
+      <span>{{TITLE}} — {{PREPARED_FOR_SHORT}}</span>
+      <span>{{FOOTER_RIGHT}}</span>
+    </div>
+  </footer>
+
+</body>
+</html>
